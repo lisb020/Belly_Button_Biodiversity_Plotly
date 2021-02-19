@@ -19,36 +19,69 @@ d3.json("data/samples.json").then((importedData) => {
     });
 
     // Slice the first 10 objects of the sample_values for plotting
-    let sampleValues = parseInt(dataLoad.map(value => value.sample_values.slice(0,10)));
+    let initSampleValues = dataLoad.map(value => value.sample_values.slice(0,10));
+    initSampleValues = initSampleValues[0].map(value => parseInt(value));
+    initSampleValues = initSampleValues.reverse();
+    console.log(initSampleValues);
     
     // Slice the first 10 objects of the otu_ids for plotting
-    let otuIds = dataLoad.map(value => value.otu_ids.slice(0,10));
-    let otuIds2 = otuIds[0].map(value => "OTU " + String(value));
+    let initOtuIds = dataLoad.map(value => value.otu_ids.slice(0,10));
+    let initOtuIds2 = initOtuIds[0].map(value => "OTU " + String(value));
     
     // Slice the first 10 objects of the otu_labels for plotting
-    let otuLabels = dataLoad.map(value => value.otu_labels.slice(0,10));
-    
+    let initOtuLabels = dataLoad.map(value => value.otu_labels.slice(0,10));
 
-    // create trace or horizontal bar chart
+    // create trace for horizontal bar chart
     let trace1 = {
-        x: sampleValues[0],
-        y: otuIds2,
-        text: otuLabels,
+        x: initSampleValues,
+        y: initOtuIds2,
+        text: initOtuLabels[0],
         name: "Bar",
         type: "bar",
         orientation: "h"
     };
-
     // data
-    let chartData = [trace1];
-
+    let barChartData = [trace1];
     // Apply the layout
-    let layout = {
+    let layout1 = {
         title: "Sample Values vs OTU IDs",
     };
-
     // Render the plot id "bar"
-    Plotly.newPlot("bar", chartData, layout);
+    Plotly.newPlot("bar", barChartData, layout1);
+
+    // create trace for bubble chart
+    let trace2 = {
+      x: initOtuIds[0],
+      y: initSampleValues,
+      text: initOtuLabels[0],
+      mode: 'markers',
+      marker: {
+        size: initSampleValues,
+        sizeref: 0.05,
+        color: initOtuIds[0],
+        sizemode: 'area'
+        }
+      };
+    
+    let bubbleChartData = [trace2];
+    
+    var layout2 = {
+      title: 'OTU IDs vs Sample Values',
+      showlegend: false,
+
+    };
+    //plot inital bubble chart
+    Plotly.newPlot('bubble', bubbleChartData, layout2);
+
+    //display metadata
+    let initMetaDataCompare = data.metadata.filter(person => person.id === 940);
+    d3.select("#sample-metadata").append("div").classed("id",true).text("Id: " + initMetaDataCompare[0].id);
+    d3.select("#sample-metadata").append("div").classed("Ethnicity",true).text("Ethnicity: " + initMetaDataCompare[0].ethnicity);
+    d3.select("#sample-metadata").append("div").classed("Gender",true).text("Gender: " + initMetaDataCompare[0].gender);
+    d3.select("#sample-metadata").append("div").classed("Age",true).text("Age: " + initMetaDataCompare[0].age);
+    d3.select("#sample-metadata").append("div").classed("Location",true).text("Location: " + initMetaDataCompare[0].location);
+    d3.select("#sample-metadata").append("div").classed("bbtype",true).text("bbtype: " + initMetaDataCompare[0].bbtype);
+    d3.select("#sample-metadata").append("div").classed("wfreq",true).text("wfreq: " + initMetaDataCompare[0].wfreq);
 
     d3.select("#selDataset").on("change",dropdown)
     
@@ -64,22 +97,42 @@ d3.json("data/samples.json").then((importedData) => {
         });
         
         // Slice the first 10 objects of the sample_values for plotting
-        sampleValues = dataCompare.map(value => value.sample_values.slice(0,10));
-        
+        let sampleValues = dataCompare.map(value => value.sample_values.slice(0,10));
+        sampleValues = sampleValues[0].map(value => parseInt(value));
+        sampleValues = sampleValues.reverse();
+        console.log("samleValues",sampleValues)
         // Slice the first 10 objects of the otu_ids for plotting
-        otuIds = dataCompare.map(value => value.otu_ids.slice(0,10));
-        otuIds2 = otuIds[0].map(value => "OTU " + String(value));
-        
+        let otuIds = dataCompare.map(value => value.otu_ids.slice(0,10));
+        let otuIds2 = otuIds[0].map(value => "OTU " + String(value));
+        console.log("otuIds", otuIds[0]);
         // Slice the first 10 objects of the otu_labels for plotting
-        otuLabels = dataCompare.map(value => value.otu_labels.slice(0,10));
+        let otuLabels = dataCompare.map(value => value.otu_labels.slice(0,10));
+        console.log("otuLabels", otuLabels[0]);
         
-        //Reverse the order of the sort and go into the 0th array
-        sampleValues = sampleValues[0].reverse()
-
+        //restyle the bar chart
         Plotly.restyle("bar","y",[otuIds2]);
         Plotly.restyle("bar","x",[sampleValues]);
-        }
+        Plotly.restyle("bar","text",[otuLabels[0]]);
 
+        //restyle the bubble chart
+        Plotly.restyle("bubble","x",[otuIds[0]]);
+        Plotly.restyle("bubble","y",[sampleValues]);
+        Plotly.restyle("bubble","marker.color", [otuIds[0]]);
+        Plotly.restyle("bubble","marker.size", [sampleValues]);
+        Plotly.restyle("bubble","text",[otuLabels[0]])
+
+        //update metadata
+        let metaDataCompare = data.metadata.filter(person => person.id === parseInt(dataset));
+        console.log(metaDataCompare);
+        d3.select("#sample-metadata").select(".id").text("Id: " + metaDataCompare[0].id);
+        d3.select("#sample-metadata").select(".Ethnicity").classed("Ethnicity",true).text("Ethnicity: " + metaDataCompare[0].ethnicity);
+        d3.select("#sample-metadata").select(".Gender").classed("Gender",true).text("Gender: " + metaDataCompare[0].gender);
+        d3.select("#sample-metadata").select(".Age").classed("Age",true).text("Age: " + metaDataCompare[0].age);
+        d3.select("#sample-metadata").select(".Location").classed("Location",true).text("Location: " + metaDataCompare[0].location);
+        d3.select("#sample-metadata").select(".bbtype").classed("",true).text("bbtype: " + metaDataCompare[0].bbtype);
+        d3.select("#sample-metadata").select(".wfreq").classed("",true).text("wfreq: " + metaDataCompare[0].wfreq);
+
+  };
 });
 
 
