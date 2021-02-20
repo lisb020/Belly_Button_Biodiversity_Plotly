@@ -9,9 +9,9 @@ d3.json("data/samples.json").then((importedData) => {
     
     //load dropdown menu with sample names/people
     data.names.forEach(name => d3.select("#selDataset").append("option").text(name).attr("value",name));
-    
     // load sheet with the 940 data on refresh
-    let dataLoad = data.samples.filter(person => person.id === "940");
+    loadId = data.names[0];
+    let dataLoad = data.samples.filter(person => person.id === loadId);
 
     // Sort the data array using the sample_values to get the top 10 OTUs
     dataLoad.sort(function(a, b) {
@@ -44,7 +44,15 @@ d3.json("data/samples.json").then((importedData) => {
     let barChartData = [trace1];
     // Apply the layout
     let layout1 = {
-        title: "Sample Values vs OTU IDs",
+        title: "Top 10 OTUs vs Sample Values",
+        xaxis: {
+          title: {
+            text: 'Sample Values'
+          }},
+        yaxis: {
+          title: {
+            text: 'OTU IDs'
+          }}
     };
     // Render the plot id "bar"
     Plotly.newPlot("bar", barChartData, layout1);
@@ -66,15 +74,37 @@ d3.json("data/samples.json").then((importedData) => {
     let bubbleChartData = [trace2];
     
     var layout2 = {
-      title: 'OTU IDs vs Sample Values',
+      title: 'Top 10 OTU IDs vs Sample Values',
       showlegend: false,
-
+      xaxis: {
+        title: {
+          text: 'Sample Values'
+        }},
+      yaxis: {
+        title: {
+          text: 'OTU IDs'
+        }}
     };
     //plot inital bubble chart
     Plotly.newPlot('bubble', bubbleChartData, layout2);
 
+    let initMetaDataCompare = data.metadata.filter(person => person.id === parseInt(loadId));
+    //**BONUS** create data for gauge chart
+    let dataGauge = [
+      {
+        domain: { x: [0, 1], y: [0, 1] },
+        value: initMetaDataCompare[0].wfreq,
+        title: { text: "Belly Button Scrubs per Week" },
+        type: "indicator",
+        mode: "gauge",
+        gauge: { axis: { visible: true, range: [0, 9], dtick: 1}, bar: {color: "red"} },
+      }
+    ];
+    
+    let layoutGauge = { width: 600, height: 500, margin: { t: 0, b: 0 } };
+    Plotly.newPlot('gauge', dataGauge, layoutGauge);
+    
     //display metadata
-    let initMetaDataCompare = data.metadata.filter(person => person.id === 940);
     d3.select("#sample-metadata").append("div").classed("id",true).text("Id: " + initMetaDataCompare[0].id);
     d3.select("#sample-metadata").append("div").classed("Ethnicity",true).text("Ethnicity: " + initMetaDataCompare[0].ethnicity);
     d3.select("#sample-metadata").append("div").classed("Gender",true).text("Gender: " + initMetaDataCompare[0].gender);
@@ -83,6 +113,7 @@ d3.json("data/samples.json").then((importedData) => {
     d3.select("#sample-metadata").append("div").classed("bbtype",true).text("bbtype: " + initMetaDataCompare[0].bbtype);
     d3.select("#sample-metadata").append("div").classed("wfreq",true).text("wfreq: " + initMetaDataCompare[0].wfreq);
 
+    // runs function dropdown when an item in the dropdown is selected
     d3.select("#selDataset").on("change",dropdown)
     
     function dropdown(){
@@ -121,9 +152,11 @@ d3.json("data/samples.json").then((importedData) => {
         Plotly.restyle("bubble","marker.size", [sampleValues]);
         Plotly.restyle("bubble","text",[otuLabels[0]])
 
-        //update metadata
+        //restyle the gauge chart
         let metaDataCompare = data.metadata.filter(person => person.id === parseInt(dataset));
-        console.log(metaDataCompare);
+        Plotly.restyle("gauge","value",metaDataCompare[0].wfreq);
+
+        //update metadata
         d3.select("#sample-metadata").select(".id").text("Id: " + metaDataCompare[0].id);
         d3.select("#sample-metadata").select(".Ethnicity").classed("Ethnicity",true).text("Ethnicity: " + metaDataCompare[0].ethnicity);
         d3.select("#sample-metadata").select(".Gender").classed("Gender",true).text("Gender: " + metaDataCompare[0].gender);
