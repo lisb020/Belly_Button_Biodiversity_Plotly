@@ -18,7 +18,7 @@ The dataset reveals that a small handful of microbial species (also called opera
 
 5. The webpage is interactive and updates all of the plots any time that a new sample is selected from the dropdown menu.
 
-note: html and css were provided
+note: html was already provided
 
 ## Deployment
 
