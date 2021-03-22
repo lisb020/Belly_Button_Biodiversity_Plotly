@@ -18,13 +18,14 @@ The dataset reveals that a small handful of microbial species (also called opera
 
 5. The webpage is interactive and updates all of the plots any time that a new sample is selected from the dropdown menu.
 
+![screenshot](/images/Website_Top.png)
+![screenshot](/images/Bubble_Chart.png)
+
 note: html was already provided
-
-
 
 ## Deployment
 
-* Deployed the app to GitHub Pages.
+* Deployed the app to [GitHub Pages](https://lisb020.github.io/Belly_Button_Biodiversity_Plotly/). 
 
 ## Libraries Required
 - D3 
@@ -36,4 +37,20 @@ note: html was already provided
 Hulcr, J. et al.(2012) _A Jungle in There: Bacteria in Belly Buttons are Highly Diverse, but Predictable_. Retrieved from: [http://robdunnlab.com/projects/belly-button-biodiversity/results-and-data/](http://robdunnlab.com/projects/belly-button-biodiversity/results-and-data/)
 
 ## File Description
+
+### index.html
+
+* file that contains the html for the project
+
+### data
+
+* folder that contains the samples.json [data](http://robdunnlab.com/projects/belly-button-biodiversity/results-and-data/)
+
+### images
+
+* folder that contains the screen shots of the webpage
+
+### static/js
+
+* folder that contains the javascript file (app.js)
 
